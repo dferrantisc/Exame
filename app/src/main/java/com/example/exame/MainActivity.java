@@ -1,5 +1,6 @@
 package com.example.exame;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -11,8 +12,11 @@ import android.widget.Toast;
 
 import com.example.exame.Entidade.Cachorro;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 import java.util.ArrayList;
@@ -41,6 +45,28 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(MainActivity.this);
         database = FirebaseDatabase.getInstance();
         DBRefe = database.getReference();
+
+
+        DBRefe.child("Cachorro").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                dogList.clear();
+                for (DataSnapshot objSnapShot:snapshot.getChildren()){
+                    Cachorro dog = objSnapShot.getValue(Cachorro.class);
+                    dogList.add(dog);
+                }
+                dogArrayAdapter = new ArrayAdapter<Cachorro>(MainActivity.this,
+                        android.R.layout.simple_list_item_1, dogList);
+                list.setAdapter(dogArrayAdapter);
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
 
